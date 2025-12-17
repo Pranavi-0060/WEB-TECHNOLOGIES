@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Marksheet</title>
+    <style>
+        /* 1. Whole page background sky blue */
+        body {
+            background-color: skyblue;
+            font-family: Arial, sans-serif; /* Optional: makes font look cleaner */
+            text-align: center; /* Helps center the heading */
+        }
+
+        /* 2. Heading black color */
+        h2 {
+            color: black;
+        }
+
+        /* 3. Table Centering and Basic Borders */
+        table {
+            margin-left: auto;
+            margin-right: auto; /* This moves the table to the center */
+            border: 1px solid black;
+            border-collapse: collapse;
+            width: 60%; /* Optional: Controls table width */
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 12px;
+            text-align: center;
+        }
+
+        /* 4. Header row background dark gray */
+        thead {
+            background-color: darkgray;
+            color: white; /* White text looks better on dark gray */
+        }
+
+        /* 5. Remaining table background light gray */
+        tbody {
+            background-color: lightgray;
+        }
+
+        /* 6. 1st Column background dark gray */
+        /* This selects every 'td' that is the first child of its row */
+        tbody td:first-child {
+            background-color: darkgray;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Student Marksheet</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Roll No</th>
+                <th>Name</th>
+                <th>Subject 1</th>
+                <th>Subject 2</th>
+                <th>Subject 3</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>101</td>
+                <td>Tira</td>
+                <td>85</td>
+                <td>90</td>
+                <td>88</td>
+                <td>263</td>
+            </tr>
+            <tr>
+                <td>102</td>
+                <td>pranavi</td>
+                <td>78</td>
+                <td>82</td>
+                <td>80</td>
+                <td>240</td>
+            </tr>
+            <tr>
+                <td>103</td>
+                <td>Gaddam</td>
+                <td>92</td>
+                <td>95</td>
+                <td>91</td>
+                <td>278</td>
+            </tr>
+            <tr>
+                <td>104</td>
+                <td>tiraaa</td>
+                <td>88</td>
+                <td>85</td>
+                <td>89</td>
+                <td>262</td>
+            </tr>
+            <tr>
+                <td>105</td>
+                <td>naviii</td>
+                <td>75</td>
+                <td>70</td>
+                <td>72</td>
+                <td>217</td>
+            </tr>
+        </tbody>
+    </table>
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Mini Task Board</title>
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#d1fae5,#ecfeff);
+    text-align:center;
+}
+
+h1{
+    color:#065f46;
+    margin-top:20px;
+}
+
+input{
+    padding:12px;
+    width:260px;
+    border-radius:8px;
+    border:1px solid #aaa;
+    background:#f0fdfa;
+}
+
+button{
+    padding:12px 18px;
+    background:linear-gradient(to right,#059669,#10b981);
+    border:none;
+    color:white;
+    border-radius:8px;
+    cursor:pointer;
+    transition:.3s;
+}
+button:hover{transform:scale(1.05);}
+
+.board{
+    display:flex;
+    justify-content:space-around;
+    margin:30px;
+}
+
+.column{
+    width:30%;
+    min-height:350px;
+    padding:15px;
+    border-radius:18px;
+    box-shadow:0 15px 25px rgba(0,0,0,.2);
+    transition:.3s;
+}
+
+/* Column Colors */
+#todo{
+    background:linear-gradient(#e6fffa,#ccfbf1);
+}
+#progress{
+    background:linear-gradient(#fff7ed,#ffedd5);
+}
+#completed{
+    background:linear-gradient(#ecfdf5,#d1fae5);
+}
+
+.column:hover{transform:translateY(-8px);}
+
+.column h2{
+    background:#065f46;
+    color:white;
+    padding:12px;
+    border-radius:10px;
+}
+
+.task{
+    background:white;
+    margin:10px 0;
+    padding:12px;
+    border-radius:10px;
+    cursor:grab;
+    box-shadow:0 4px 8px rgba(0,0,0,.15);
+    transition:.3s;
+}
+.task:hover{background:#f0fdfa;}
+
+.completed{
+    background:#bbf7d0 !important;
+    border:2px solid #22c55e;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Mini Task Board</h1>
+
+<input type="text" id="taskInput" placeholder="Enter Task Name">
+<button onclick="addTask()">Add Task</button>
+
+<div class="board">
+    <div class="column" id="todo" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>To Do</h2>
+    </div>
+
+    <div class="column" id="progress" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>In Progress</h2>
+    </div>
+
+    <div class="column" id="completed" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <h2>Completed</h2>
+    </div>
+</div>
+
+<script>
+let taskId = 0;
+
+function addTask(){
+    const input = document.getElementById("taskInput");
+    if(input.value === "") return;
+
+    const task = document.createElement("div");
+    task.className = "task";
+    task.draggable = true;
+    task.id = "task" + taskId++;
+
+    const date = new Date().toLocaleDateString();
+    task.innerHTML = "<b>" + input.value + "</b><br><small>" + date + "</small>";
+
+    task.ondragstart = function(e){
+        e.dataTransfer.setData("text", task.id);
+    };
+
+    document.getElementById("todo").appendChild(task);
+    input.value = "";
+}
+
+function allowDrop(e){
+    e.preventDefault();
+}
+
+function drop(e){
+    e.preventDefault();
+    const id = e.dataTransfer.getData("text");
+    const task = document.getElementById(id);
+    e.target.closest(".column").appendChild(task);
+
+    if(e.target.closest(".column").id === "completed"){
+        task.classList.add("completed");
+        alert("Task Completed Successfully");
+    }
+}
+</script>
+
+</body>
+</html>

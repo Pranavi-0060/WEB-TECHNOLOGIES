@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>HTML5 Canvas</title>
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#b7f5d8,#e8fff6);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.container{
+    background:white;
+    padding:30px;
+    border-radius:18px;
+    box-shadow:0 15px 30px rgba(0,0,0,.3);
+    text-align:center;
+}
+
+h1{
+    color:#064b3b;
+    margin-bottom:20px;
+}
+
+canvas{
+    border:3px solid #064b3b;
+    border-radius:12px;
+    background:#f9fffc;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h1>HTML5 Canvas Drawing</h1>
+    <canvas id="myCanvas" width="500" height="300"></canvas>
+</div>
+
+<script>
+const canvas = document.getElementById("myCanvas");
+const ctx = canvas.getContext("2d");
+
+// Rectangle
+ctx.fillStyle = "#0b6b53";
+ctx.fillRect(20, 20, 140, 70);
+
+// Circle
+ctx.beginPath();
+ctx.arc(250, 80, 40, 0, Math.PI * 2);
+ctx.fillStyle = "#16a085";
+ctx.fill();
+
+// Line
+ctx.beginPath();
+ctx.moveTo(20, 220);
+ctx.lineTo(480, 220);
+ctx.strokeStyle = "#e74c3c";
+ctx.lineWidth = 3;
+ctx.stroke();
+
+// Text
+ctx.font = "24px Segoe UI";
+ctx.fillStyle = "#064b3b";
+ctx.fillText("HTML5 Canvas", 155, 160);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Management System</title>
+<style>
+body{
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#ffe4e6,#fecdd3,#fda4af);
+}
+
+.container{
+    width:360px;
+    margin:50px auto;
+    background:white;
+    padding:25px;
+    border-radius:20px;
+    box-shadow:0 15px 30px rgba(0,0,0,.3);
+    text-align:center;
+}
+
+h1{color:#be185d;}
+
+input{
+    width:100%;
+    padding:12px;
+    margin:10px 0;
+    border-radius:8px;
+    border:1px solid #ccc;
+    background:#fff1f2;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    background:linear-gradient(to right,#be185d,#fb7185);
+    border:none;
+    color:white;
+    border-radius:8px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+.msg{color:red;margin-bottom:8px;}
+
+table{
+    width:90%;
+    margin:30px auto;
+    background:white;
+    border-collapse:collapse;
+    border-radius:14px;
+    overflow:hidden;
+    box-shadow:0 10px 20px rgba(0,0,0,.2);
+}
+
+th{background:#be185d;color:white;padding:12px;}
+td{padding:10px;border-bottom:1px solid #ddd;text-align:center;}
+
+.del{background:#ef4444;border-radius:6px;}
+.clear{display:block;width:220px;margin:20px auto;background:black;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>Register User</h1>
+<div id="msg" class="msg"></div>
+
+<form id="regForm">
+<input id="name" placeholder="Full Name">
+<input id="email" placeholder="Email">
+<input id="mobile" placeholder="Mobile Number">
+<input id="password" type="password" placeholder="Password">
+<button type="submit">Register</button>
+</form>
+</div>
+
+<button class="clear" onclick="clearAll()">Clear All Users</button>
+
+<table>
+<thead>
+<tr>
+<th>Name</th><th>Email</th><th>Mobile</th><th>Password</th><th>Action</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+
+<script>
+const form = document.getElementById("regForm");
+const msg = document.getElementById("msg");
+
+function getUsers(){
+    return JSON.parse(localStorage.getItem("users")) || [];
+}
+function save(users){
+    localStorage.setItem("users", JSON.stringify(users));
+}
+
+form.addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const mobile = document.getElementById("mobile").value.trim();
+    const pass = document.getElementById("password").value.trim();
+
+    if(!name || !email || !mobile || !pass){
+        msg.innerText = "All fields are required";
+        return;
+    }
+    if(!/^\d{10}$/.test(mobile)){
+        msg.innerText = "Mobile must be 10 digits";
+        return;
+    }
+    if(pass.length < 6){
+        msg.innerText = "Password must be minimum 6 characters";
+        return;
+    }
+
+    let users = getUsers();
+    if(users.some(u => u.email === email)){
+        msg.innerText = "Email already registered";
+        return;
+    }
+
+    users.push({name,email,mobile,pass});
+    save(users);
+
+    msg.style.color="green";
+    msg.innerText="User Registered Successfully";
+    form.reset();
+    display();
+});
+
+function display(){
+    tableBody.innerHTML="";
+    getUsers().forEach((u,i)=>{
+        tableBody.innerHTML += `
+        <tr>
+            <td>${u.name}</td>
+            <td>${u.email}</td>
+            <td>${u.mobile}</td>
+            <td>${u.pass}</td>
+            <td><button class="del" onclick="del(${i})">Delete</button></td>
+        </tr>`;
+    });
+}
+
+function del(i){
+    let users = getUsers();
+    users.splice(i,1);
+    save(users);
+    display();
+}
+
+function clearAll(){
+    if(confirm("Delete all users permanently?")){
+        localStorage.removeItem("users");
+        display();
+    }
+}
+
+display();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Adaptive Registration (Rule Engine)</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #edf1f4;
+}
+.panel {
+  width: 500px;
+  margin: 40px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+.group {
+  margin-bottom: 12px;
+}
+label {
+  display: block;
+  margin-bottom: 4px;
+}
+input, select {
+  width: 100%;
+  padding: 7px;
+}
+#status {
+  margin-top: 15px;
+  font-size: 14px;
+}
+.error { color: red; }
+.success { color: green; }
+button {
+  margin-top: 15px;
+  padding: 10px;
+  width: 100%;
+}
+.hidden {
+  display: none;
+}
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+  <h3>User Registration</h3>
+
+  <div class="group">
+    <label>Name</label>
+    <input id="f_name">
+  </div>
+
+  <div class="group">
+    <label>Email</label>
+    <input id="f_email">
+  </div>
+
+  <div class="group">
+    <label>Age</label>
+    <input type="number" id="f_age">
+  </div>
+
+  <div class="group">
+    <label>Role</label>
+    <select id="f_role" onchange="toggleSkills()">
+      <option value="">Select</option>
+      <option>Student</option>
+      <option>Teacher</option>
+      <option>Admin</option>
+    </select>
+  </div>
+
+  <div class="group hidden" id="skillsBlock">
+    <label>Skills</label>
+    <input id="f_skills" placeholder="e.g., Java, Python">
+  </div>
+
+  <div class="group">
+    <label>Password</label>
+    <input type="password" id="f_pass">
+  </div>
+
+  <div class="group">
+    <label>Confirm Password</label>
+    <input type="password" id="f_cpass">
+  </div>
+
+  <button onclick="processRegistration()">Create Account</button>
+
+  <div id="status"></div>
+</div>
+
+<script>
+/* -------- APPLICATION STATE -------- */
+let state = {
+  name: "",
+  email: "",
+  age: 0,
+  role: "",
+  skills: "",
+  password: "",
+  confirm: ""
+};
+
+/* -------- RULE ENGINE -------- */
+let rules = [
+  {
+    check: () => state.name !== "",
+    message: "Name is required"
+  },
+  {
+    check: () => state.email.endsWith("@vitap.ac.in"),
+    message: "Use VIT-AP email only"
+  },
+  {
+    check: () => state.age >= 18,
+    message: "Age must be 18 or above"
+  },
+  {
+    check: () => state.role !== "",
+    message: "Role must be selected"
+  },
+  {
+    check: () =>
+      state.role === "Student" || state.skills.trim() !== "",
+    message: "Skills required for Teacher/Admin"
+  },
+  {
+    check: () => state.password === state.confirm,
+    message: "Passwords do not match"
+  },
+  {
+    check: () =>
+      state.role !== "Admin" || state.password.length >= 8,
+    message: "Admin password must be at least 8 characters"
+  }
+];
+
+/* -------- CONTROLLER -------- */
+function processRegistration() {
+  collectState();
+
+  for (let rule of rules) {
+    if (!rule.check()) {
+      showStatus(rule.message, false);
+      return;
+    }
+  }
+
+  showStatus("Registration successful ✔", true);
+  resetForm();
+}
+
+/* -------- HELPERS -------- */
+function collectState() {
+  state.name = f_name.value.trim();
+  state.email = f_email.value.trim();
+  state.age = Number(f_age.value);
+  state.role = f_role.value;
+  state.skills = f_skills.value.trim();
+  state.password = f_pass.value;
+  state.confirm = f_cpass.value;
+}
+
+function toggleSkills() {
+  if (f_role.value === "Teacher" || f_role.value === "Admin") {
+    skillsBlock.classList.remove("hidden");
+  } else {
+    skillsBlock.classList.add("hidden");
+    f_skills.value = "";
+  }
+}
+
+function showStatus(msg, ok) {
+  status.innerHTML = msg;
+  status.className = ok ? "success" : "error";
+}
+
+function resetForm() {
+  f_name.value = "";
+  f_email.value = "";
+  f_age.value = "";
+  f_role.value = "";
+  f_skills.value = "";
+  f_pass.value = "";
+  f_cpass.value = "";
+  skillsBlock.classList.add("hidden");
+}
+</script>
+
+</body>
+</html>

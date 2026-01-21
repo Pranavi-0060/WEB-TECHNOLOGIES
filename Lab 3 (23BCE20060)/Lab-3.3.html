@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dynamic Survey Engine</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #eef2f5;
+}
+.container {
+  width: 500px;
+  margin: 40px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+.questionBox {
+  margin-bottom: 15px;
+}
+.error {
+  color: red;
+  font-size: 13px;
+}
+button {
+  padding: 8px 14px;
+  margin-top: 10px;
+}
+.progress {
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h3>Student Feedback Survey</h3>
+
+  <div class="progress" id="progress"></div>
+
+  <div class="questionBox" id="questionBox"></div>
+
+  <div class="error" id="error"></div>
+
+  <button onclick="nextQuestion()">Next</button>
+</div>
+
+<script>
+/* -------- SURVEY DATA -------- */
+const survey = [
+  {
+    type: "radio",
+    text: "How do you rate online classes?",
+    options: ["Poor", "Average", "Good"],
+    required: true
+  },
+  {
+    type: "checkbox",
+    text: "Which platforms do you use for study?",
+    options: ["Zoom", "Google Meet", "YouTube"],
+    minSelect: 1
+  },
+  {
+    type: "text",
+    text: "What can be improved in online learning?",
+    maxLength: 60,
+    required: true
+  }
+];
+
+/* -------- STATE -------- */
+let index = 0;
+let answers = {};
+
+/* -------- RENDER ENGINE -------- */
+function renderQuestion() {
+  error.innerHTML = "";
+  progress.innerHTML = `Question ${index + 1} of ${survey.length}`;
+
+  let q = survey[index];
+  let html = `<b>${q.text}</b><br><br>`;
+
+  if (q.type === "radio") {
+    q.options.forEach(opt => {
+      html += `
+        <input type="radio" name="ans" value="${opt}">
+        ${opt}<br>
+      `;
+    });
+  }
+
+  if (q.type === "checkbox") {
+    q.options.forEach(opt => {
+      html += `
+        <input type="checkbox" name="ans" value="${opt}">
+        ${opt}<br>
+      `;
+    });
+  }
+
+  if (q.type === "text") {
+    html += `<input type="text" id="textAns" style="width:100%;">`;
+  }
+
+  questionBox.innerHTML = html;
+}
+
+/* -------- VALIDATION -------- */
+function validate() {
+  let q = survey[index];
+
+  if (q.type === "radio") {
+    let selected = document.querySelector('input[name="ans"]:checked');
+    if (!selected) return "Please select an option";
+    answers[index] = selected.value;
+  }
+
+  if (q.type === "checkbox") {
+    let selected = document.querySelectorAll('input[name="ans"]:checked');
+    if (selected.length < q.minSelect)
+      return "Select at least one option";
+    answers[index] = Array.from(selected).map(i => i.value);
+  }
+
+  if (q.type === "text") {
+    let value = textAns.value.trim();
+    if (q.required && value === "") return "Answer is required";
+    if (value.length > q.maxLength)
+      return `Maximum ${q.maxLength} characters allowed`;
+    answers[index] = value;
+  }
+
+  return null;
+}
+
+/* -------- NAVIGATION -------- */
+function nextQuestion() {
+  let msg = validate();
+  if (msg) {
+    error.innerHTML = msg;
+    return;
+  }
+
+  index++;
+
+  if (index === survey.length) {
+    finishSurvey();
+  } else {
+    renderQuestion();
+  }
+}
+
+/* -------- FINAL SUBMIT -------- */
+function finishSurvey() {
+  questionBox.innerHTML = "Survey submitted successfully ✔";
+  progress.innerHTML = "";
+  error.innerHTML = "";
+  console.log("Survey Answers:", answers);
+}
+
+/* -------- START -------- */
+renderQuestion();
+</script>
+
+</body>
+</html>

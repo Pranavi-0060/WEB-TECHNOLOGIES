@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Smart Shopping Cart</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #eef2f5;
+}
+.wrapper {
+  display: flex;
+  gap: 30px;
+  margin: 30px;
+}
+.catalog, .cart {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 300px;
+}
+.item {
+  margin-bottom: 10px;
+}
+.cartItem {
+  border-bottom: 1px solid #ccc;
+  padding: 6px 0;
+}
+.totalBox {
+  margin-top: 15px;
+  font-weight: bold;
+}
+.error { color: red; }
+.success { color: green; }
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+  <!-- PRODUCT CATALOG -->
+  <div class="catalog">
+    <h3>Product Catalog</h3>
+
+    <select id="productSelect"></select><br><br>
+
+    Quantity:
+    <input type="number" id="qty" value="1" min="1"><br><br>
+
+    <button onclick="addProduct()">Add to Cart</button>
+
+    <p id="msg"></p>
+  </div>
+
+  <!-- CART -->
+  <div class="cart">
+    <h3>Your Cart</h3>
+
+    <div id="cartView"></div>
+
+    <br>
+    Coupon:
+    <input id="coupon">
+    <button onclick="applyCoupon()">Apply</button>
+
+    <div class="totalBox">
+      Total: ₹<span id="finalTotal">0</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+/* ---------- APPLICATION STATE ---------- */
+const state = {
+  products: [
+    { id: 1, name: "Laptop", price: 50000, category: "Electronics" },
+    { id: 2, name: "Mouse", price: 500, category: "Accessories" },
+    { id: 3, name: "Keyboard", price: 1000, category: "Accessories" },
+    { id: 4, name: "Headphones", price: 2000, category: "Electronics" }
+  ],
+  cart: [],
+  coupon: 0
+};
+
+/* ---------- INITIALIZE CATALOG ---------- */
+function loadCatalog() {
+  state.products.forEach(p => {
+    productSelect.innerHTML +=
+      `<option value="${p.id}">${p.name} - ₹${p.price}</option>`;
+  });
+}
+
+/* ---------- CART OPERATIONS ---------- */
+function addProduct() {
+  let id = Number(productSelect.value);
+  let quantity = Number(qty.value);
+
+  let product = state.products.find(p => p.id === id);
+  let cartItem = state.cart.find(i => i.id === id);
+
+  if (cartItem) {
+    cartItem.qty += quantity;
+  } else {
+    state.cart.push({ ...product, qty: quantity });
+  }
+
+  msg.innerHTML = "Item added to cart";
+  msg.className = "success";
+
+  renderCart();
+}
+
+function removeProduct(id) {
+  state.cart = state.cart.filter(i => i.id !== id);
+  renderCart();
+}
+
+/* ---------- PRICING ENGINE ---------- */
+function calculateTotal() {
+  let subtotal = 0;
+  let discount = 0;
+
+  state.cart.forEach(item => {
+    subtotal += item.price * item.qty;
+
+    if (item.category === "Accessories" && item.qty >= 2) {
+      discount += item.price * item.qty * 0.05;
+    }
+  });
+
+  if (subtotal > 30000) discount += subtotal * 0.10;
+  if (state.coupon > 0) discount += subtotal * (state.coupon / 100);
+
+  return Math.round(subtotal - discount);
+}
+
+/* ---------- COUPON ---------- */
+function applyCoupon() {
+  let code = coupon.value.trim().toUpperCase();
+
+  if (code === "SAVE10") {
+    state.coupon = 10;
+  } else {
+    state.coupon = 0;
+  }
+
+  renderCart();
+}
+
+/* ---------- RENDER ---------- */
+function renderCart() {
+  cartView.innerHTML = "";
+
+  state.cart.forEach(item => {
+    cartView.innerHTML += `
+      <div class="cartItem">
+        ${item.name} × ${item.qty}
+        <button onclick="removeProduct(${item.id})">X</button>
+      </div>
+    `;
+  });
+
+  finalTotal.innerText = calculateTotal();
+}
+
+/* ---------- START ---------- */
+loadCatalog();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>User Activity Monitor</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #eef2f5;
+}
+.container {
+  width: 650px;
+  margin: 30px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+}
+.stats {
+  display: flex;
+  gap: 20px;
+  margin-bottom: 15px;
+}
+.box {
+  background: #f7f7f7;
+  padding: 10px;
+  border-radius: 6px;
+  width: 120px;
+  text-align: center;
+}
+.log {
+  height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  padding: 8px;
+  font-size: 14px;
+}
+.warning {
+  color: red;
+  font-weight: bold;
+}
+button {
+  margin-top: 10px;
+  padding: 6px 12px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <h3>User Activity Monitor</h3>
+
+  <div class="stats">
+    <div class="box">Clicks<br><b id="clickCount">0</b></div>
+    <div class="box">Keys<br><b id="keyCount">0</b></div>
+    <div class="box">Focus<br><b id="focusCount">0</b></div>
+  </div>
+
+  <input type="text" placeholder="Click / type / focus here">
+
+  <p id="alertMsg"></p>
+
+  <div class="log" id="logBox"></div>
+
+  <button onclick="resetMonitor()">Reset</button>
+  <button onclick="exportLog()">Export Log</button>
+</div>
+
+<script>
+/* -------- APPLICATION STATE -------- */
+const activityState = {
+  log: [],
+  clicks: 0,
+  keys: 0,
+  focus: 0
+};
+
+/* -------- EVENT DISPATCHER -------- */
+function recordEvent(type, phase) {
+  activityState.log.push({
+    event: type,
+    phase: phase,
+    time: new Date().toLocaleTimeString()
+  });
+
+  if (type === "Click") activityState.clicks++;
+  if (type === "Key") activityState.keys++;
+  if (type === "Focus") activityState.focus++;
+
+  updateDashboard();
+  detectSuspicious();
+}
+
+/* -------- EVENT LISTENERS -------- */
+// Capture phase
+document.addEventListener("click", e => recordEvent("Click", "Capture"), true);
+
+// Bubble phase
+document.addEventListener("click", e => recordEvent("Click", "Bubble"));
+document.addEventListener("keydown", e => recordEvent("Key", "Bubble"));
+document.addEventListener("focusin", e => recordEvent("Focus", "Bubble"));
+
+/* -------- UI UPDATE -------- */
+function updateDashboard() {
+  clickCount.innerText = activityState.clicks;
+  keyCount.innerText = activityState.keys;
+  focusCount.innerText = activityState.focus;
+
+  logBox.innerHTML = "";
+  activityState.log.slice(-15).forEach((l, i) => {
+    logBox.innerHTML +=
+      `${l.event} (${l.phase}) at ${l.time}<br>`;
+  });
+}
+
+/* -------- THRESHOLD ENGINE -------- */
+function detectSuspicious() {
+  if (activityState.clicks > 8 || activityState.keys > 15) {
+    alertMsg.innerHTML = "⚠ Suspicious activity detected";
+    alertMsg.className = "warning";
+  }
+}
+
+/* -------- CONTROLS -------- */
+function resetMonitor() {
+  activityState.log = [];
+  activityState.clicks = 0;
+  activityState.keys = 0;
+  activityState.focus = 0;
+
+  alertMsg.innerHTML = "";
+  updateDashboard();
+}
+
+function exportLog() {
+  alert(JSON.stringify(activityState.log, null, 2));
+}
+</script>
+
+</body>
+</html>

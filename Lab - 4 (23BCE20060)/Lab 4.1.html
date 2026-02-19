@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Username Availability Checker</title>
+
+<style>
+body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: linear-gradient(120deg,#e3f2fd,#fce4ec);
+    padding: 40px;
+}
+
+.container {
+    max-width: 420px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+h2 { margin-bottom: 15px; }
+
+input {
+    width: 100%;
+    padding: 10px;
+    font-size: 15px;
+    border: 1px solid #bbb;
+    border-radius: 6px;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px;
+    width: 100%;
+    border: none;
+    background: #1976d2;
+    color: white;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+button:hover { background:#125aa3; }
+
+.status {
+    margin-top: 10px;
+    font-weight: 600;
+}
+
+.loading { color: #777; }
+.available { color: green; }
+.taken { color: red; }
+
+.spinner {
+    display: none;
+    margin-top: 10px;
+    width: 20px;
+    height: 20px;
+    border: 3px solid #ccc;
+    border-top: 3px solid #1976d2;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% { transform: rotate(360deg); }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>Create Username</h2>
+
+    <form id="regForm">
+        <input type="text" id="username" placeholder="Enter username" required>
+        <div class="spinner" id="spinner"></div>
+        <div id="status" class="status"></div>
+        <button type="submit">Register</button>
+    </form>
+</div>
+
+<script>
+const input = document.getElementById("username");
+const statusDiv = document.getElementById("status");
+const spinner = document.getElementById("spinner");
+const form = document.getElementById("regForm");
+
+let usernameAvailable = false;
+let debounceTimer;
+
+// Check while typing (Debounced AJAX)
+input.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(checkUsername, 500);
+});
+
+async function checkUsername() {
+
+    const username = input.value.trim().toLowerCase();
+
+    if (!username) {
+        statusDiv.textContent = "";
+        spinner.style.display = "none";
+        return;
+    }
+
+    spinner.style.display = "block";
+    statusDiv.className = "status loading";
+    statusDiv.textContent = "Checking availability...";
+
+    try {
+        const response = await fetch("users.json");
+        const data = await response.json();
+
+        spinner.style.display = "none";
+
+        if (data.users.includes(username)) {
+            statusDiv.className = "status taken";
+            statusDiv.textContent = "Username already taken";
+            usernameAvailable = false;
+        } else {
+            statusDiv.className = "status available";
+            statusDiv.textContent = "Username available";
+            usernameAvailable = true;
+        }
+
+    } catch (error) {
+        spinner.style.display = "none";
+        statusDiv.textContent = "Error checking username";
+        usernameAvailable = false;
+    }
+}
+
+// Prevent submission if username unavailable
+form.addEventListener("submit", function(e) {
+    if (!usernameAvailable) {
+        e.preventDefault();
+        alert("Please choose an available username before submitting.");
+    } else {
+        e.preventDefault(); // (for demo — prevents page reload)
+        alert("Form submitted successfully!");
+    }
+});
+</script>
+
+</body>
+</html>

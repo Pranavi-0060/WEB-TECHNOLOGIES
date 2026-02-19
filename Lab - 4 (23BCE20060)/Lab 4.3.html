@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student Management (AJAX CRUD)</title>
+
+<style>
+body {
+    font-family: "Segoe UI", Arial;
+    background: linear-gradient(120deg,#e8f5e9,#e3f2fd);
+    padding: 40px;
+}
+
+.container {
+    max-width: 750px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+}
+
+input {
+    padding: 8px;
+    margin: 5px;
+    width: 170px;
+}
+
+button {
+    padding: 8px 12px;
+    margin: 5px;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover { background:#125aa3; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+}
+
+.status {
+    margin-top: 10px;
+    font-weight: 600;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>Student Management System</h2>
+
+<input id="sid" placeholder="Student ID">
+<input id="sname" placeholder="Name">
+<input id="dept" placeholder="Department">
+<input id="marks" placeholder="Marks">
+
+<button onclick="createStudent()">Add Student</button>
+<button onclick="updateStudent()">Update</button>
+
+<div class="status" id="status"></div>
+
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Department</th>
+<th>Marks</th>
+<th>Actions</th>
+</tr>
+</thead>
+
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+
+<script>
+let students = [];
+
+// Simulate AJAX delay (server processing)
+function fakeRequest(callback, success = true) {
+    setTimeout(() => {
+        if(success) callback();
+        else showStatus("Server Error (500)", "red");
+    }, 400);
+}
+
+// CREATE
+function createStudent() {
+    fakeRequest(() => {
+        const id = sid.value.trim();
+
+        if (students.find(s => s.id === id)) {
+            showStatus("Student ID already exists (404)", "red");
+            return;
+        }
+
+        students.push({
+            id,
+            name: sname.value,
+            dept: dept.value,
+            marks: marks.value
+        });
+
+        renderTable();
+        clearForm();
+        showStatus("Student Added Successfully (200)", "green");
+    });
+}
+
+// READ
+function renderTable() {
+    tableBody.innerHTML = "";
+
+    students.forEach((s, index) => {
+        tableBody.innerHTML += `
+        <tr>
+            <td>${s.id}</td>
+            <td>${s.name}</td>
+            <td>${s.dept}</td>
+            <td>${s.marks}</td>
+            <td>
+                <button onclick="editStudent(${index})">Edit</button>
+                <button onclick="deleteStudent(${index})">Delete</button>
+            </td>
+        </tr>`;
+    });
+}
+
+// UPDATE
+function updateStudent() {
+    fakeRequest(() => {
+        const id = sid.value;
+
+        const student = students.find(s => s.id === id);
+        if (!student) {
+            showStatus("Student Not Found (404)", "red");
+            return;
+        }
+
+        student.name = sname.value;
+        student.dept = dept.value;
+        student.marks = marks.value;
+
+        renderTable();
+        clearForm();
+        showStatus("Student Updated (200)", "green");
+    });
+}
+
+// DELETE
+function deleteStudent(index) {
+    fakeRequest(() => {
+        students.splice(index, 1);
+        renderTable();
+        showStatus("Student Deleted (200)", "green");
+    });
+}
+
+// Load data into form for editing
+function editStudent(index) {
+    const s = students[index];
+    sid.value = s.id;
+    sname.value = s.name;
+    dept.value = s.dept;
+    marks.value = s.marks;
+}
+
+// Helpers
+function clearForm() {
+    sid.value = "";
+    sname.value = "";
+    dept.value = "";
+    marks.value = "";
+}
+
+function showStatus(msg, color) {
+    status.textContent = msg;
+    status.style.color = color;
+}
+</script>
+
+</body>
+</html>

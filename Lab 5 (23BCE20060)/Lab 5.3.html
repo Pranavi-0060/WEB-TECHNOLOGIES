@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Student Records Console</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#f5f7fa;
+}
+
+/* Top Header */
+.header{
+    background:#0d47a1;
+    color:white;
+    padding:15px;
+    font-size:22px;
+}
+
+/* Layout */
+.container{
+    display:flex;
+}
+
+/* Left Form */
+.form-panel{
+    width:280px;
+    background:white;
+    padding:20px;
+    border-right:1px solid #ccc;
+    height:calc(100vh - 52px);
+}
+
+.form-panel input{
+    width:100%;
+    padding:8px;
+    margin-bottom:10px;
+}
+
+/* Buttons */
+button{
+    width:100%;
+    padding:8px;
+    margin-bottom:8px;
+    background:#0d47a1;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#08306b;
+}
+
+/* Right List */
+.display{
+    flex:1;
+    padding:20px;
+}
+
+/* Student Cards */
+.card{
+    background:white;
+    padding:15px;
+    margin-bottom:15px;
+    border-left:5px solid #0d47a1;
+}
+
+.card h3{
+    margin:0;
+}
+
+.msg{
+    font-weight:bold;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">Student Record System</div>
+
+<div class="container">
+
+<div class="form-panel">
+<input id="sid" placeholder="Student ID">
+<input id="sname" placeholder="Name">
+<input id="scourse" placeholder="Course">
+<input id="smarks" type="number" placeholder="Marks">
+
+<button onclick="addStudent()">Add Student</button>
+<button onclick="updateStudent()">Update Student</button>
+
+<div id="msg" class="msg"></div>
+</div>
+
+<div class="display">
+<h2>Student Records</h2>
+<div id="list"></div>
+</div>
+
+</div>
+
+<script>
+let students=[];
+
+// Load JSON using fetch
+async function loadStudents(){
+    const res = await fetch("students.json");
+    const data = await res.json();
+    students = data.students;
+    render();
+}
+
+// Display as cards
+function render(){
+    list.innerHTML="";
+    students.forEach((s,i)=>{
+        list.innerHTML+=`
+        <div class="card">
+            <h3>${s.name}</h3>
+            <p><b>ID:</b> ${s.id}</p>
+            <p><b>Course:</b> ${s.course}</p>
+            <p><b>Marks:</b> ${s.marks}</p>
+            <button onclick="deleteStudent(${i})">Delete</button>
+        </div>`;
+    });
+}
+
+// Validation
+function validate(id,name,course,marks){
+    if(!id||!name||!course||!marks)
+        return "All fields required";
+
+    if(isNaN(marks)||marks<0||marks>100)
+        return "Marks must be between 0 and 100";
+
+    return "valid";
+}
+
+// Add
+function addStudent(){
+
+    const id=sid.value.trim();
+    const name=sname.value.trim();
+    const course=scourse.value.trim();
+    const marks=smarks.value.trim();
+
+    const v=validate(id,name,course,marks);
+    if(v!=="valid"){ showMsg(v,"red"); return; }
+
+    if(students.find(s=>s.id===id)){
+        showMsg("Duplicate ID","red");
+        return;
+    }
+
+    students.push({id,name,course,marks});
+    render();
+    showMsg("Student Added","green");
+}
+
+// Update
+function updateStudent(){
+
+    const student=students.find(s=>s.id===sid.value);
+    if(!student){ showMsg("Student not found","red"); return; }
+
+    student.name=sname.value;
+    student.course=scourse.value;
+    student.marks=smarks.value;
+
+    render();
+    showMsg("Student Updated","green");
+}
+
+// Delete
+function deleteStudent(i){
+    students.splice(i,1);
+    render();
+}
+
+function showMsg(t,c){
+    msg.innerText=t;
+    msg.style.color=c;
+}
+
+loadStudents();
+</script>
+
+</body>
+</html>

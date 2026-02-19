@@ -1,0 +1,7 @@
+{
+  "books": [
+    { "id": "B301", "title": "Computer Networks", "author": "Andrew Tanenbaum", "price": "670" },
+    { "id": "B302", "title": "Database Systems", "author": "Korth", "price": "540" },
+    { "id": "B303", "title": "Artificial Intelligence", "author": "Russell & Norvig", "price": "720" }
+  ]
+}

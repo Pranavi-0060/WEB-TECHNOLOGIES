@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Inventory Control Panel</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Arial;
+    background:#eef2f6;
+}
+
+/* Header */
+.header{
+    background:#37474f;
+    color:white;
+    padding:15px;
+    font-size:22px;
+}
+
+/* Layout */
+.container{
+    display:flex;
+}
+
+/* Left Form */
+.form{
+    width:280px;
+    background:white;
+    padding:20px;
+    border-right:1px solid #ccc;
+    height:calc(100vh - 52px);
+}
+
+.form input{
+    width:100%;
+    padding:8px;
+    margin-bottom:10px;
+}
+
+.form button{
+    width:100%;
+    padding:8px;
+    margin-bottom:8px;
+    background:#37474f;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+/* Right Dashboard */
+.dashboard{
+    flex:1;
+    padding:20px;
+}
+
+/* Summary Box */
+.summary{
+    background:white;
+    padding:15px;
+    margin-bottom:15px;
+    border-left:6px solid #37474f;
+}
+
+/* Product Cards */
+.product{
+    background:white;
+    padding:15px;
+    margin-bottom:12px;
+}
+
+/* Low stock highlight */
+.low{
+    border-left:6px solid red;
+    background:#ffecec;
+}
+
+.msg{
+    font-weight:bold;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">Product Inventory Dashboard</div>
+
+<div class="container">
+
+<div class="form">
+<input id="pid" placeholder="Product ID">
+<input id="pname" placeholder="Name">
+<input id="pcategory" placeholder="Category">
+<input id="pprice" type="number" placeholder="Price">
+<input id="pstock" type="number" placeholder="Stock">
+
+<button onclick="addProduct()">Add Product</button>
+<button onclick="updateProduct()">Update Product</button>
+
+<div id="msg" class="msg"></div>
+</div>
+
+<div class="dashboard">
+<div class="summary" id="totalBox">
+Total Inventory Value: ₹0
+</div>
+
+<div id="list"></div>
+</div>
+
+</div>
+
+<script>
+let products=[];
+
+// Load JSON
+async function loadProducts(){
+    try{
+        const res = await fetch("inventory.json");
+        const data = await res.json();
+        products = data.products;
+        render();
+    }catch{
+        showMsg("Error loading data","red");
+    }
+}
+
+// Render products + total value
+function render(){
+
+    list.innerHTML="";
+    let total = 0;
+
+    products.forEach((p,i)=>{
+
+        total += Number(p.price)*Number(p.stock);
+
+        const lowStock = p.stock < 5;
+
+        list.innerHTML += `
+        <div class="product ${lowStock?'low':''}">
+            <h3>${p.name}</h3>
+            <p><b>ID:</b> ${p.id}</p>
+            <p><b>Category:</b> ${p.category}</p>
+            <p><b>Price:</b> ₹${p.price}</p>
+            <p><b>Stock:</b> ${p.stock}
+            ${lowStock ? "<span style='color:red'> (Low Stock)</span>" : ""}</p>
+            <button onclick="deleteProduct(${i})">Delete</button>
+        </div>`;
+    });
+
+    totalBox.innerText="Total Inventory Value: ₹"+total;
+}
+
+// Validation + error handling
+function validate(p){
+
+    if(!p.id||!p.name||!p.category||!p.price||!p.stock)
+        return "All fields required";
+
+    if(isNaN(p.price)||p.price<=0)
+        return "Invalid price";
+
+    if(isNaN(p.stock)||p.stock<0)
+        return "Invalid stock";
+
+    return "valid";
+}
+
+// Add
+function addProduct(){
+
+    const product={
+        id:pid.value,
+        name:pname.value,
+        category:pcategory.value,
+        price:pprice.value,
+        stock:pstock.value
+    };
+
+    const v=validate(product);
+    if(v!=="valid"){ showMsg(v,"red"); return; }
+
+    if(products.find(x=>x.id===product.id)){
+        showMsg("Duplicate ID","red");
+        return;
+    }
+
+    products.push(product);
+    render();
+    showMsg("Product Added","green");
+}
+
+// Update
+function updateProduct(){
+
+    const p=products.find(x=>x.id===pid.value);
+    if(!p){ showMsg("Product not found","red"); return; }
+
+    p.name=pname.value;
+    p.category=pcategory.value;
+    p.price=pprice.value;
+    p.stock=pstock.value;
+
+    render();
+    showMsg("Product Updated","green");
+}
+
+// Delete
+function deleteProduct(i){
+    products.splice(i,1);
+    render();
+}
+
+function showMsg(t,c){
+    msg.innerText=t;
+    msg.style.color=c;
+}
+
+loadProducts();
+</script>
+
+</body>
+</html>

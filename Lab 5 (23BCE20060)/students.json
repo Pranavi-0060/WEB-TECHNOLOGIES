@@ -1,0 +1,7 @@
+{
+  "students": [
+    { "id": "501", "name": "Kiran Rao", "course": "Cyber Security", "marks": "78" },
+    { "id": "502", "name": "Sneha Pillai", "course": "Data Science", "marks": "88" },
+    { "id": "503", "name": "Aditya Menon", "course": "Cloud Computing", "marks": "81" }
+  ]
+}

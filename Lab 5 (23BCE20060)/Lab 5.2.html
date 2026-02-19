@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Library Admin Console</title>
+
+<style>
+body{
+    margin:0;
+    font-family:Tahoma;
+    display:flex;
+    height:100vh;
+}
+
+/* Left Control Panel */
+.sidebar{
+    width:300px;
+    background:#263238;
+    color:white;
+    padding:20px;
+}
+
+.sidebar h2{
+    margin-top:0;
+}
+
+.sidebar input{
+    width:100%;
+    padding:8px;
+    margin-bottom:10px;
+    border:none;
+}
+
+.sidebar button{
+    width:100%;
+    padding:8px;
+    margin-bottom:8px;
+    background:#00acc1;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+.sidebar button:hover{
+    background:#00838f;
+}
+
+/* Right Display Area */
+.main{
+    flex:1;
+    background:#eceff1;
+    padding:25px;
+    overflow:auto;
+}
+
+/* Book Cards Instead of Table */
+.book{
+    background:white;
+    padding:15px;
+    margin-bottom:15px;
+    border-left:6px solid #00acc1;
+}
+
+.book h3{
+    margin:0;
+}
+
+.book button{
+    margin-top:8px;
+    padding:6px 10px;
+}
+
+.msg{
+    font-weight:bold;
+    margin-top:10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="sidebar">
+<h2>Manage Books</h2>
+
+<input id="bid" placeholder="Book ID (B301)">
+<input id="btitle" placeholder="Title">
+<input id="bauthor" placeholder="Author">
+<input id="bprice" type="number" placeholder="Price">
+
+<button onclick="addBook()">Add Book</button>
+<button onclick="updateBook()">Update Book</button>
+
+<div id="msg" class="msg"></div>
+</div>
+
+<div class="main">
+<h2>Library Collection</h2>
+<div id="list"></div>
+</div>
+
+<script>
+let books=[];
+
+// Load JSON (AJAX requirement)
+async function loadBooks(){
+    const res = await fetch("books.json");
+    const data = await res.json();
+    books = data.books;
+    render();
+}
+
+// Render as CARDS instead of table
+function render(){
+
+    list.innerHTML="";
+
+    books.forEach((b,i)=>{
+        list.innerHTML += `
+        <div class="book">
+            <h3>${b.title}</h3>
+            <p><b>ID:</b> ${b.id}</p>
+            <p><b>Author:</b> ${b.author}</p>
+            <p><b>Price:</b> ₹${b.price}</p>
+            <button onclick="deleteBook(${i})">Remove</button>
+        </div>`;
+    });
+}
+
+// Validation
+function validate(id,title,author,price){
+
+    if(!id || !title || !author || !price)
+        return "All fields required";
+
+    if(isNaN(price) || price <= 0)
+        return "Price must be a valid number";
+
+    return "valid";
+}
+
+
+// Add
+function addBook(){
+
+    const id=bid.value.trim();
+    const title=btitle.value.trim();
+    const author=bauthor.value.trim();
+    const price=bprice.value.trim();
+
+    const v=validate(id,title,author,price);
+    if(v!=="valid"){ showMsg(v,"red"); return; }
+
+    if(books.find(b=>b.id===id)){
+        showMsg("Duplicate ID","red");
+        return;
+    }
+
+    books.push({id,title,author,price});
+    render();
+    showMsg("Book Added","green");
+}
+
+// Update
+function updateBook(){
+
+    const book=books.find(b=>b.id===bid.value);
+    if(!book){ showMsg("Book not found","red"); return; }
+
+    book.title=btitle.value;
+    book.author=bauthor.value;
+    book.price=bprice.value;
+
+    render();
+    showMsg("Book Updated","green");
+}
+
+// Delete
+function deleteBook(i){
+    books.splice(i,1);
+    render();
+}
+
+// Message
+function showMsg(t,c){
+    msg.innerText=t;
+    msg.style.color=c;
+}
+
+loadBooks();
+</script>
+
+</body>
+</html>

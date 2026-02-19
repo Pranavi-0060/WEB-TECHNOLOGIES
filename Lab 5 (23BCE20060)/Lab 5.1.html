@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Employee XML Manager</title>
+
+<style>
+body{
+    margin:0;
+    font-family:"Segoe UI",sans-serif;
+    background:#e9edf2;
+}
+
+.header{
+    background:#1f2937;
+    color:white;
+    padding:18px;
+    font-size:20px;
+}
+
+.wrapper{
+    display:flex;
+}
+
+.panel{
+    width:280px;
+    background:white;
+    padding:20px;
+    box-shadow:2px 0 6px rgba(0,0,0,0.1);
+    height:calc(100vh - 56px);
+}
+
+.panel input{
+    width:100%;
+    padding:8px;
+    margin-bottom:10px;
+    border:1px solid #ccc;
+}
+
+.panel button{
+    width:100%;
+    padding:8px;
+    margin-bottom:8px;
+    background:#2563eb;
+    color:white;
+    border:none;
+    cursor:pointer;
+}
+
+.panel button:hover{
+    background:#1e40af;
+}
+
+.content{
+    flex:1;
+    padding:25px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+}
+
+th{
+    background:#2563eb;
+    color:white;
+}
+
+th,td{
+    padding:10px;
+    border:1px solid #ddd;
+    text-align:center;
+}
+
+tr:nth-child(even){
+    background:#f7f9fc;
+}
+
+.msg{
+    margin-top:10px;
+    font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">Employee Management – XML Data</div>
+
+<div class="wrapper">
+
+<div class="panel">
+    <h3>Add / Update</h3>
+
+    <input id="eid" placeholder="Employee ID">
+    <input id="ename" placeholder="Name">
+    <input id="edept" placeholder="Department">
+    <input id="esalary" type="number" placeholder="Salary">
+
+    <button onclick="addEmployee()">Add Employee</button>
+    <button onclick="updateEmployee()">Update Employee</button>
+
+    <div id="msg" class="msg"></div>
+</div>
+
+<div class="content">
+    <h3>Employee Records</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th><th>Name</th><th>Department</th><th>Salary</th><th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+    </table>
+</div>
+
+</div>
+
+<script>
+let xmlDoc;
+
+// LOAD XML USING AJAX
+function loadEmployees(){
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET","employees.xml",true);
+
+    xhr.onload=function(){
+        xmlDoc = xhr.responseXML;
+        displayEmployees();
+    };
+
+    xhr.send();
+}
+
+// DISPLAY DATA
+function displayEmployees(){
+
+    const employees = xmlDoc.getElementsByTagName("employee");
+    tbody.innerHTML="";
+
+    for(let i=0;i<employees.length;i++){
+
+        const id = employees[i].getElementsByTagName("id")[0].textContent;
+        const name = employees[i].getElementsByTagName("name")[0].textContent;
+        const dept = employees[i].getElementsByTagName("department")[0].textContent;
+        const salary = employees[i].getElementsByTagName("salary")[0].textContent;
+
+        tbody.innerHTML += `
+        <tr>
+            <td>${id}</td>
+            <td>${name}</td>
+            <td>${dept}</td>
+            <td>₹${salary}</td>
+            <td><button onclick="deleteEmployee(${i})">Delete</button></td>
+        </tr>`;
+    }
+}
+
+// VALIDATION FUNCTION
+function validateEmployee(id,name,dept,salary){
+
+    if(!id || !name || !dept || !salary)
+        return "All fields are required";
+
+    if(isNaN(id))
+        return "Employee ID must be numeric";
+
+    if(isNaN(salary) || Number(salary)<=0)
+        return "Salary must be a positive number";
+
+    return "valid";
+}
+
+// ADD EMPLOYEE
+function addEmployee(){
+
+    const id = eid.value.trim();
+    const name = ename.value.trim();
+    const dept = edept.value.trim();
+    const salary = esalary.value.trim();
+
+    const check = validateEmployee(id,name,dept,salary);
+
+    if(check!=="valid"){
+        showMsg(check,"red");
+        return;
+    }
+
+    const employees = xmlDoc.getElementsByTagName("employee");
+
+    for(let i=0;i<employees.length;i++){
+        if(employees[i].getElementsByTagName("id")[0].textContent===id){
+            showMsg("Duplicate ID not allowed","red");
+            return;
+        }
+    }
+
+    const emp = xmlDoc.createElement("employee");
+
+    function node(tag,value){
+        const n = xmlDoc.createElement(tag);
+        n.appendChild(xmlDoc.createTextNode(value));
+        return n;
+    }
+
+    emp.appendChild(node("id",id));
+    emp.appendChild(node("name",name));
+    emp.appendChild(node("department",dept));
+    emp.appendChild(node("salary",salary));
+
+    xmlDoc.documentElement.appendChild(emp);
+
+    displayEmployees();
+    showMsg("Employee Added","green");
+}
+
+// UPDATE EMPLOYEE
+function updateEmployee(){
+
+    const employees = xmlDoc.getElementsByTagName("employee");
+
+    for(let i=0;i<employees.length;i++){
+
+        if(employees[i].getElementsByTagName("id")[0].textContent===eid.value){
+
+            employees[i].getElementsByTagName("name")[0].textContent = ename.value;
+            employees[i].getElementsByTagName("department")[0].textContent = edept.value;
+            employees[i].getElementsByTagName("salary")[0].textContent = esalary.value;
+
+            displayEmployees();
+            showMsg("Employee Updated","green");
+            return;
+        }
+    }
+
+    showMsg("Employee not found","red");
+}
+
+// DELETE EMPLOYEE
+function deleteEmployee(index){
+    const employees = xmlDoc.getElementsByTagName("employee");
+    employees[index].remove();
+    displayEmployees();
+}
+
+// MESSAGE DISPLAY
+function showMsg(text,color){
+    msg.textContent=text;
+    msg.style.color=color;
+}
+
+loadEmployees();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<employees>
+    <employee>
+        <id>201</id>
+        <name>Lokesh Varma</name>
+        <department>Software</department>
+        <salary>62000</salary>
+    </employee>
+
+    <employee>
+        <id>202</id>
+        <name>Meghana Reddy</name>
+        <department>Analytics</department>
+        <salary>58000</salary>
+    </employee>
+
+    <employee>
+        <id>203</id>
+        <name>Arvind Sai</name>
+        <department>Networking</department>
+        <salary>54000</salary>
+    </employee>
+</employees>

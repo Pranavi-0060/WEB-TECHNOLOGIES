@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Student ES6 App</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        height: 100vh;
+        background: linear-gradient(135deg, #667eea, #764ba2); /* FIXED BACKGROUND */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+        backdrop-filter: blur(15px);
+        background: rgba(255,255,255,0.15);
+        border-radius: 20px;
+        padding: 30px;
+        width: 380px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        color: white;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-weight: 600;
+    }
+
+    .input-group {
+        position: relative;
+        margin: 15px 0;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 10px;
+        border: none;
+        outline: none;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.2);
+        color: white;
+        font-size: 14px;
+    }
+
+    .input-group label {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        color: #ddd;
+        font-size: 13px;
+        transition: 0.3s;
+        pointer-events: none;
+    }
+
+    .input-group input:focus + label,
+    .input-group input:valid + label {
+        top: -10px;
+        font-size: 11px;
+        color: #fff;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        background: linear-gradient(135deg, #00c6ff, #0072ff);
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 15px rgba(0,114,255,0.6);
+    }
+
+    .output {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.2);
+        backdrop-filter: blur(10px);
+    }
+
+    .output p {
+        margin: 5px 0;
+    }
+
+    .card {
+        margin-top: 10px;
+        padding: 10px;
+        border-radius: 10px;
+        background: rgba(0,0,0,0.4);
+    }
+
+    .grade {
+        font-weight: bold;
+        color: #00ffcc;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>🎓 Student Analyzer</h2>
+
+    <div class="input-group">
+        <input type="number" id="id" required>
+        <label>ID</label>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="name" required>
+        <label>Name</label>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="department" required>
+        <label>Department</label>
+    </div>
+
+    <div class="input-group">
+        <input type="number" id="marks" required>
+        <label>Marks</label>
+    </div>
+
+    <button onclick="processStudent()">✨ Generate Result</button>
+
+    <div class="output" id="output"></div>
+</div>
+
+<script>
+function processStudent() {
+
+    const student = {
+        id: document.getElementById("id").value,
+        name: document.getElementById("name").value,
+        department: document.getElementById("department").value,
+        marks: Number(document.getElementById("marks").value)
+    };
+
+    if (!student.id || !student.name || !student.department || !student.marks) {
+        alert("Fill all fields!");
+        return;
+    }
+
+    const { id, name, department, marks } = student;
+
+    let grade;
+    if (marks >= 90) grade = "A";
+    else if (marks >= 75) grade = "B";
+    else if (marks >= 50) grade = "C";
+    else grade = "F";
+
+    const updatedStudent = {
+        ...student,
+        grade: grade
+    };
+
+    document.getElementById("output").innerHTML = `
+        <p><strong>📌 Destructured:</strong></p>
+        <div class="card">
+            ${id} | ${name} | ${department} | ${marks}
+        </div>
+
+        <p><strong>✨ Updated Object:</strong></p>
+        <div class="card">
+            ID: ${updatedStudent.id} <br>
+            Name: ${updatedStudent.name} <br>
+            Dept: ${updatedStudent.department} <br>
+            Marks: ${updatedStudent.marks} <br>
+            Grade: <span class="grade">${updatedStudent.grade}</span>
+        </div>
+    `;
+}
+</script>
+
+</body>
+</html>

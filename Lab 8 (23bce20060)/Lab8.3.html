@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Course Enrollment System</title>
+
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+        height: 100vh;
+        background: #0f172a;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .container {
+        background: rgba(0, 0, 0, 0.8);
+        border-radius: 20px;
+        padding: 30px;
+        width: 380px;
+        box-shadow: 0 0 25px rgba(0,255,150,0.3);
+        color: #00ffcc;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .input-group {
+        position: relative;
+        margin: 15px 0;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #00ffcc;
+        border-radius: 8px;
+        background: transparent;
+        color: white;
+        outline: none;
+    }
+
+    .input-group label {
+        position: absolute;
+        left: 10px;
+        top: 10px;
+        font-size: 13px;
+        color: #00ffcc;
+        transition: 0.3s;
+    }
+
+    .input-group input:focus + label,
+    .input-group input:valid + label {
+        top: -10px;
+        font-size: 11px;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        border: none;
+        border-radius: 10px;
+        background: #00ffcc;
+        color: black;
+        font-size: 16px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    button:hover {
+        background: #00cc99;
+        transform: scale(1.05);
+    }
+
+    .output {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 12px;
+        background: rgba(0,255,150,0.1);
+    }
+
+    .card {
+        background: rgba(0,0,0,0.9);
+        padding: 10px;
+        border-radius: 10px;
+        margin-top: 10px;
+        border-left: 4px solid #00ffcc;
+    }
+
+    .success {
+        color: #00ffcc;
+        font-weight: bold;
+    }
+
+    .error {
+        color: #ff4d4d;
+        font-weight: bold;
+    }
+
+    .loading {
+        text-align: center;
+        font-size: 14px;
+        color: #ccc;
+        margin-top: 10px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+    <h2>📘 Course Enrollment</h2>
+
+    <div class="input-group">
+        <input type="text" id="courseName" required>
+        <label>Course Name</label>
+    </div>
+
+    <div class="input-group">
+        <input type="text" id="instructor" required>
+        <label>Instructor</label>
+    </div>
+
+    <button onclick="enroll()">🚀 Enroll Now</button>
+
+    <div class="output" id="output"></div>
+</div>
+
+<script>
+
+// ES6 Class
+class Course {
+    constructor(courseName, instructor) {
+        this.courseName = courseName;
+        this.instructor = instructor;
+    }
+
+    displayCourse() {
+        return `Course: ${this.courseName}, Instructor: ${this.instructor}`;
+    }
+}
+
+// Initial seat count
+let seats = 3;
+
+function enroll() {
+
+    const courseName = document.getElementById("courseName").value;
+    const instructor = document.getElementById("instructor").value;
+
+    if (!courseName || !instructor) {
+        alert("Fill all fields!");
+        return;
+    }
+
+    const course1 = new Course(courseName, instructor);
+
+    const output = document.getElementById("output");
+
+    // Show loading
+    output.innerHTML = `<div class="loading">⏳ Checking availability...</div>`;
+
+    // Promise with delay (simulate real system)
+    let enrollCourse = new Promise((resolve, reject) => {
+        setTimeout(() => {
+            if (seats > 0) {
+                seats--;
+                resolve(`Enrollment Successful (Seats left: ${seats})`);
+            } else {
+                reject("Course Full");
+            }
+        }, 1500);
+    });
+
+    enrollCourse
+        .then(msg => {
+            output.innerHTML = `
+                <div class="card">${course1.displayCourse()}</div>
+                <div class="card success">${msg}</div>
+            `;
+        })
+        .catch(err => {
+            output.innerHTML = `
+                <div class="card">${course1.displayCourse()}</div>
+                <div class="card error">${err}</div>
+            `;
+        });
+}
+
+</script>
+
+</body>
+</html>

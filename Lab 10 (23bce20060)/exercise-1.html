@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register Form</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(135deg, #89f7fe, #66a6ff);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .box {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      width: 320px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    input {
+      width: 100%;
+      padding: 8px;
+      margin: 10px 0;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background: #4facfe;
+      color: white;
+      border: none;
+    }
+
+    .error { color: red; font-size: 12px; }
+    .success { color: green; text-align: center; }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Register</h2>
+
+  <input type="text" id="name" placeholder="Name">
+  <div id="nameErr" class="error"></div>
+
+  <input type="text" id="email" placeholder="Email">
+  <div id="emailErr" class="error"></div>
+
+  <input type="password" id="password" placeholder="Password">
+  <div id="passErr" class="error"></div>
+
+  <button onclick="validate()">Submit</button>
+
+  <p id="success" class="success"></p>
+</div>
+
+<script>
+function validate() {
+  let name = document.getElementById("name").value;
+  let email = document.getElementById("email").value;
+  let pass = document.getElementById("password").value;
+
+  document.getElementById("nameErr").innerText = "";
+  document.getElementById("emailErr").innerText = "";
+  document.getElementById("passErr").innerText = "";
+  document.getElementById("success").innerText = "";
+
+  let valid = true;
+
+  if (name === "") {
+    document.getElementById("nameErr").innerText = "Name required";
+    valid = false;
+  }
+
+  if (!email.includes("@")) {
+    document.getElementById("emailErr").innerText = "Invalid email";
+    valid = false;
+  }
+
+  if (pass.length < 6) {
+    document.getElementById("passErr").innerText = "Min 6 characters";
+    valid = false;
+  }
+
+  if (valid) {
+    document.getElementById("success").innerText = "Form Submitted!";
+  }
+}
+</script>
+
+</body>
+</html>

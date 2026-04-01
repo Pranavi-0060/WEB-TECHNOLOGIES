@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Task Manager</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial;
+      background: linear-gradient(135deg, #74ebd5, #acb6e5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .box {
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      width: 350px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    input {
+      width: 70%;
+      padding: 8px;
+      margin-right: 5px;
+    }
+
+    button {
+      padding: 8px 12px;
+      background: #4facfe;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    li {
+      list-style: none;
+      background: #f1f1f1;
+      margin: 8px 0;
+      padding: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    span {
+      color: red;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Task Manager</h2>
+
+  <input type="text" id="taskInput" placeholder="Enter task">
+  <button onclick="addTask()">Add</button>
+
+  <ul id="list"></ul>
+</div>
+
+<script>
+  function addTask() {
+    let input = document.getElementById("taskInput");
+    let value = input.value;
+
+    if (value.trim() === "") return;
+
+    let li = document.createElement("li");
+    li.innerHTML = value + " <span onclick='this.parentElement.remove()'>✖</span>";
+
+    document.getElementById("list").appendChild(li);
+
+    input.value = "";
+  }
+</script>
+
+</body>
+</html>

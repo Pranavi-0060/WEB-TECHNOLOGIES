@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Data</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #e3f2fd;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .card {
+      background: white;
+      margin: 10px;
+      padding: 15px;
+      display: inline-block;
+      width: 200px;
+      border-radius: 10px;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    }
+  </style>
+</head>
+
+<body>
+
+<h2>User Directory</h2>
+<p id="loading">Loading...</p>
+<div id="data"></div>
+
+<script>
+fetch("https://jsonplaceholder.typicode.com/users")
+.then(res => res.json())
+.then(users => {
+  document.getElementById("loading").innerText = "";
+
+  users.forEach(u => {
+    let div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `<h3>${u.name}</h3><p>${u.email}</p>`;
+    document.getElementById("data").appendChild(div);
+  });
+})
+.catch(() => {
+  document.getElementById("loading").innerText = "Error loading data";
+});
+</script>
+
+</body>
+</html>

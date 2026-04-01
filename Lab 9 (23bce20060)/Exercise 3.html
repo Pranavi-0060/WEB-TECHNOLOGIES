@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Neon Counter</title>
+
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: radial-gradient(circle, #0f2027, #000000);
+      font-family: Arial;
+    }
+
+    .container {
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .card {
+      text-align: center;
+      padding: 40px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.05);
+      box-shadow: 0 0 30px #00ffcc;
+      backdrop-filter: blur(10px);
+      color: #00ffcc;
+    }
+
+    .count {
+      font-size: 70px;
+      margin: 20px 0;
+      text-shadow: 0 0 20px #00ffcc;
+      transition: transform 0.2s;
+    }
+
+    .btn {
+      margin: 10px;
+      padding: 10px 20px;
+      font-size: 20px;
+      border: 2px solid #00ffcc;
+      background: transparent;
+      color: #00ffcc;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .btn:hover {
+      background: #00ffcc;
+      color: black;
+      box-shadow: 0 0 15px #00ffcc;
+    }
+  </style>
+</head>
+
+<body>
+<div id="root"></div>
+
+<script>
+const { useState } = React;
+
+function App() {
+  const [count, setCount] = useState(0);
+
+  return React.createElement("div", { className: "container" },
+    React.createElement("div", { className: "card" },
+
+      React.createElement("h1", null, "⚡ Neon Counter"),
+
+      React.createElement("div", {
+        className: "count",
+        style: { transform: count !== 0 ? "scale(1.2)" : "scale(1)" }
+      }, count),
+
+      React.createElement("div", null,
+        React.createElement("button", {
+          className: "btn",
+          onClick: () => setCount(count + 1)
+        }, "➕"),
+
+        React.createElement("button", {
+          className: "btn",
+          onClick: () => setCount(count - 1)
+        }, "➖")
+      )
+
+    )
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(
+  React.createElement(App)
+);
+</script>
+
+</body>
+</html>
